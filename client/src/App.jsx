@@ -20,6 +20,9 @@ function App() {
   // activeChat format: { type: 'private', targetId: socketId/userId, targetName: username, targetSocketId: socketId }
   // หรือ { type: 'group', targetId: groupName, targetName: groupName }
 
+  // Mobile sidebar state
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   // เช็ค Token เมื่อ Load หน้าครั้งแรก
   useEffect(() => {
     const checkAuth = async () => {
@@ -162,6 +165,8 @@ function App() {
       targetUserId, // สำหรับ private chat
       targetSocketId // สำหรับ private chat
     });
+    // ปิด sidebar บนมือถือเมื่อเลือกแชท
+    setIsSidebarOpen(false);
   };
 
   // (R8) ฟังก์ชันสร้างกลุ่ม
@@ -209,40 +214,79 @@ function App() {
 
   // Main Chat Interface
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900 overflow-hidden">
+      {/* Mobile Overlay */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar - แสดง Active Users และ Groups */}
-      <Sidebar
-        user={user}
-        activeUsers={activeUsers}
-        groupList={groupList}
-        onOpenChat={handleOpenChat}
-        onCreateGroup={handleCreateGroup}
-        onJoinGroup={handleJoinGroup}
-        onLogout={handleLogout}
-        activeChat={activeChat}
-      />
+      <div className={`
+        fixed md:relative inset-y-0 left-0 z-50
+        transform transition-transform duration-300 ease-in-out
+        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+      `}>
+        <Sidebar
+          user={user}
+          activeUsers={activeUsers}
+          groupList={groupList}
+          onOpenChat={handleOpenChat}
+          onCreateGroup={handleCreateGroup}
+          onJoinGroup={handleJoinGroup}
+          onLogout={handleLogout}
+          activeChat={activeChat}
+          onCloseSidebar={() => setIsSidebarOpen(false)}
+        />
+      </div>
 
       {/* Chat Window - แสดงหน้าต่างแชท */}
-      {activeChat ? (
-        <ChatWindow
-          user={user}
-          chatType={activeChat.type}
-          targetId={activeChat.targetId}
-          targetName={activeChat.targetName}
-          targetUserId={activeChat.targetUserId}
-          targetSocketId={activeChat.targetSocketId}
-        />
-      ) : (
-        <div className="flex-1 flex items-center justify-center bg-white dark:bg-gray-800">
-          <div className="text-center">
-            <svg className="mx-auto h-20 w-20 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
-            <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">No chat selected</h3>
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">Choose a conversation from the sidebar to start chatting</p>
+      <div className="flex-1 flex flex-col min-w-0">
+        {activeChat ? (
+          <ChatWindow
+            user={user}
+            chatType={activeChat.type}
+            targetId={activeChat.targetId}
+            targetName={activeChat.targetName}
+            targetUserId={activeChat.targetUserId}
+            targetSocketId={activeChat.targetSocketId}
+            onOpenSidebar={() => setIsSidebarOpen(true)}
+          />
+        ) : (
+          <div className="flex-1 flex flex-col bg-white dark:bg-gray-800">
+            {/* Mobile Header with Menu Button */}
+            <div className="md:hidden bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3">
+              <button
+                onClick={() => setIsSidebarOpen(true)}
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              >
+                <svg className="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Empty State */}
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center px-4">
+                <svg className="mx-auto h-16 w-16 md:h-20 md:w-20 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                <h3 className="mt-4 text-base md:text-lg font-semibold text-gray-900 dark:text-white">No chat selected</h3>
+                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">Choose a conversation to start chatting</p>
+                <button
+                  onClick={() => setIsSidebarOpen(true)}
+                  className="mt-4 md:hidden px-4 py-2 bg-[#e45b8f] text-white rounded-lg hover:bg-[#d04a7e] transition-colors"
+                >
+                  Open Chats
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

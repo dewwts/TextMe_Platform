@@ -11,7 +11,8 @@ function Sidebar({
   onCreateGroup,
   onJoinGroup,
   onLogout,
-  activeChat
+  activeChat,
+  onCloseSidebar
 }) {
   const { isDark, toggleTheme } = useTheme();
   const [showCreateGroup, setShowCreateGroup] = useState(false);
@@ -60,24 +61,35 @@ function Sidebar({
   };
 
   return (
-    <div className="w-80 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col">
+    <div className="w-80 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col h-screen">
       {/* Header */}
       <div className="p-4 bg-[#e45b8f] dark:bg-[#d04a7e] text-white">
         <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-3">
-            <svg className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
+            {/* Close button for mobile */}
+            <button
+              onClick={onCloseSidebar}
+              className="md:hidden p-1 rounded-lg hover:bg-[#d04a7e] dark:hover:bg-[#c93b6d] transition-colors flex-shrink-0"
+              aria-label="Close sidebar"
+            >
+              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            <svg className="h-7 w-7 md:h-8 md:w-8 text-white flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
-            <div>
-              <h2 className="text-xl font-bold">Simple Chat</h2>
-              <p className="text-sm text-pink-100">@{user.username}</p>
+            <div className="min-w-0 flex-1">
+              <h2 className="text-lg md:text-xl font-bold truncate">CU TextMe</h2>
+              <p className="text-xs md:text-sm text-pink-100 truncate">@{user.username}</p>
             </div>
           </div>
           <Button
             onClick={onLogout}
             variant="secondary"
             size="sm"
-            className="!bg-white !text-[#e45b8f] hover:!bg-pink-50 dark:!bg-gray-800 dark:!text-[#e45b8f] dark:hover:!bg-gray-700"
+            className="!bg-white !text-[#e45b8f] hover:!bg-pink-50 dark:!bg-gray-800 dark:!text-[#e45b8f] dark:hover:!bg-gray-700 flex-shrink-0 !text-xs md:!text-sm !px-2 md:!px-3"
           >
             Logout
           </Button>

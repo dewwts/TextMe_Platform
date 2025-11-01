@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import socket from '../socket';
 import Button from './Button';
 
-function ChatWindow({ user, chatType, targetId, targetName, targetUserId, targetSocketId }) {
+function ChatWindow({ user, chatType, targetId, targetName, targetUserId, targetSocketId, onOpenSidebar }) {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
@@ -254,12 +254,23 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
   return (
     <div className="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900">
       {/* Chat Header */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center shadow-sm">
-        <div className="w-12 h-12 bg-[#e45b8f] dark:bg-[#e45b8f] rounded-full flex items-center justify-center text-white font-semibold mr-4 text-lg">
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-3 md:px-6 py-3 md:py-4 flex items-center shadow-sm">
+        {/* Mobile back button */}
+        <button
+          onClick={onOpenSidebar}
+          className="md:hidden p-2 mr-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
+          aria-label="Open sidebar"
+        >
+          <svg className="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+
+        <div className="w-10 h-10 md:w-12 md:h-12 bg-[#e45b8f] dark:bg-[#e45b8f] rounded-full flex items-center justify-center text-white font-semibold mr-3 md:mr-4 text-base md:text-lg flex-shrink-0">
           {chatType === 'private' ? targetName.charAt(0).toUpperCase() : '#'}
         </div>
-        <div>
-          <h3 className="font-semibold text-gray-900 dark:text-white text-lg">{targetName}</h3>
+        <div className="min-w-0 flex-1">
+          <h3 className="font-semibold text-gray-900 dark:text-white text-base md:text-lg truncate">{targetName}</h3>
           <p className="text-xs text-gray-500 dark:text-gray-400">
             {chatType === 'private' ? 'Private Chat' : 'Group Chat'}
           </p>
@@ -267,7 +278,7 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
       </div>
 
       {/* Messages Container (R6) */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4">
+      <div className="flex-1 overflow-y-auto p-3 md:p-6 space-y-3 md:space-y-4">
         {isLoadingHistory ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
@@ -294,7 +305,7 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
                 className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-xs lg:max-w-md px-4 py-3 rounded-xl ${
+                  className={`max-w-[75%] md:max-w-xs lg:max-w-md px-3 md:px-4 py-2 md:py-3 rounded-xl ${
                     isOwnMessage
                       ? 'bg-[#e45b8f] dark:bg-[#e45b8f] text-white'
                       : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-white border border-gray-200 dark:border-gray-700 shadow-sm'
@@ -323,7 +334,7 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
         {/* Typing Indicator */}
         {chatType === 'private' && isTyping && (
           <div className="flex justify-start">
-            <div className="max-w-xs lg:max-w-md px-4 py-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
+            <div className="max-w-[75%] md:max-w-xs lg:max-w-md px-3 md:px-4 py-2 md:py-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
               <div className="flex items-center gap-1">
                 <div className="flex gap-1">
                   <span className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
@@ -337,7 +348,7 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
 
         {chatType === 'group' && typingUsers.size > 0 && (
           <div className="flex justify-start">
-            <div className="max-w-xs lg:max-w-md px-4 py-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
+            <div className="max-w-[75%] md:max-w-xs lg:max-w-md px-3 md:px-4 py-2 md:py-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
               <div className="flex items-center gap-2">
                 <div className="flex gap-1">
                   <span className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
@@ -356,14 +367,14 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
       </div>
 
       {/* Chat Input Box (R6) */}
-      <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-6 py-4 shadow-sm">
-        <form onSubmit={handleSendMessage} className="flex gap-3">
+      <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-3 md:px-6 py-3 md:py-4 shadow-sm">
+        <form onSubmit={handleSendMessage} className="flex gap-2 md:gap-3">
           <input
             type="text"
             value={inputMessage}
             onChange={handleTyping}
             placeholder="Type a message..."
-            className="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-1 focus:ring-[#e45b8f] dark:focus:ring-[#e45b8f] focus:border-[#e45b8f] dark:focus:border-[#e45b8f] outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+            className="flex-1 px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-1 focus:ring-[#e45b8f] dark:focus:ring-[#e45b8f] focus:border-[#e45b8f] dark:focus:border-[#e45b8f] outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
             disabled={isLoadingHistory}
           />
           <Button
@@ -371,6 +382,7 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
             disabled={isLoadingHistory}
             variant="primary"
             size="md"
+            className="!px-4 md:!px-6 !text-sm md:!text-base"
           >
             Send
           </Button>
