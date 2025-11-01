@@ -47,7 +47,16 @@ body {
 
 #root {
   height: 100vh;
+  height: 100dvh; /* Dynamic viewport height for mobile browsers */
   width: 100vw;
+  overflow: hidden;
+}
+
+/* Support for browsers that don't support dvh */
+@supports not (height: 100dvh) {
+  #root {
+    height: 100vh;
+  }
 }
 
 /* Dark mode scrollbar */
