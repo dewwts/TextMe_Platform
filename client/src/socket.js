@@ -2,7 +2,7 @@ import { io } from 'socket.io-client';
 
 // ดึง Server URL จาก Environment Variable
 // ถ้าไม่มี ให้ใช้ localhost สำหรับ Development
-const SERVER_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:3003';
+const SERVER_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:3001';
 
 // สร้าง Socket Connection
 const socket = io(SERVER_URL, {
