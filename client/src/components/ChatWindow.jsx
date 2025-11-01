@@ -257,12 +257,17 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
       <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-2 md:px-6 py-2 md:py-4 flex items-center shadow-sm flex-shrink-0">
         {/* Mobile back button */}
         <button
-          onClick={onOpenSidebar}
-          className="md:hidden p-1.5 mr-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
-          aria-label="Open sidebar"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (onOpenSidebar) onOpenSidebar();
+          }}
+          type="button"
+          className="md:hidden p-2 mr-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 transition-colors flex-shrink-0"
+          aria-label="Back to chats"
         >
-          <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          <svg className="w-6 h-6 text-gray-700 dark:text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
 
@@ -367,15 +372,19 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
       </div>
 
       {/* Chat Input Box (R6) */}
-      <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-2 md:px-6 py-2 md:py-4 shadow-sm flex-shrink-0">
+      <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-2 md:px-6 py-2 md:py-4 shadow-sm flex-shrink-0 relative z-10">
         <form onSubmit={handleSendMessage} className="flex gap-1.5 md:gap-3 items-center">
           <input
             type="text"
             value={inputMessage}
             onChange={handleTyping}
             placeholder="Type a message..."
-            className="flex-1 px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-gray-200 dark:border-gray-700 rounded-lg md:rounded-xl focus:ring-1 focus:ring-[#e45b8f] dark:focus:ring-[#e45b8f] focus:border-[#e45b8f] dark:focus:border-[#e45b8f] outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+            className="flex-1 px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-gray-200 dark:border-gray-700 rounded-lg md:rounded-xl focus:ring-1 focus:ring-[#e45b8f] dark:focus:ring-[#e45b8f] focus:border-[#e45b8f] dark:focus:border-[#e45b8f] outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white touch-manipulation"
             disabled={isLoadingHistory}
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck="false"
           />
           <Button
             type="submit"

@@ -61,19 +61,24 @@ function Sidebar({
   };
 
   return (
-    <div className="w-80 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col h-screen">
+    <div className="w-80 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col h-screen touch-auto">
       {/* Header */}
-      <div className="p-4 bg-[#e45b8f] dark:bg-[#d04a7e] text-white">
+      <div className="p-3 md:p-4 bg-[#e45b8f] dark:bg-[#d04a7e] text-white flex-shrink-0">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
             {/* Close button for mobile */}
             <button
-              onClick={onCloseSidebar}
-              className="md:hidden p-1 rounded-lg hover:bg-[#d04a7e] dark:hover:bg-[#c93b6d] transition-colors flex-shrink-0"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (onCloseSidebar) onCloseSidebar();
+              }}
+              type="button"
+              className="md:hidden p-1.5 rounded-lg hover:bg-[#d04a7e] dark:hover:bg-[#c93b6d] active:bg-[#c93b6d] transition-colors flex-shrink-0"
               aria-label="Close sidebar"
             >
-              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
 
