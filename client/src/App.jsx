@@ -214,7 +214,7 @@ function App() {
 
   // Main Chat Interface
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900 overflow-hidden">
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900 overflow-hidden relative">
       {/* Mobile Overlay */}
       {isSidebarOpen && (
         <div
@@ -225,7 +225,8 @@ function App() {
 
       {/* Sidebar - แสดง Active Users และ Groups */}
       <div className={`
-        fixed md:relative inset-y-0 left-0 z-50
+        fixed md:static inset-y-0 left-0 z-50
+        w-80 flex-shrink-0
         transform transition-transform duration-300 ease-in-out
         ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
       `}>
@@ -243,7 +244,7 @@ function App() {
       </div>
 
       {/* Chat Window - แสดงหน้าต่างแชท */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {activeChat ? (
           <ChatWindow
             user={user}

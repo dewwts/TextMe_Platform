@@ -252,9 +252,9 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900">
+    <div className="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900 h-full overflow-hidden">
       {/* Chat Header */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-3 md:px-6 py-3 md:py-4 flex items-center shadow-sm">
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-3 md:px-6 py-3 md:py-4 flex items-center shadow-sm flex-shrink-0">
         {/* Mobile back button */}
         <button
           onClick={onOpenSidebar}
@@ -367,8 +367,8 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
       </div>
 
       {/* Chat Input Box (R6) */}
-      <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-3 md:px-6 py-3 md:py-4 shadow-sm">
-        <form onSubmit={handleSendMessage} className="flex gap-2 md:gap-3">
+      <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-3 md:px-6 py-3 md:py-4 shadow-sm flex-shrink-0">
+        <form onSubmit={handleSendMessage} className="flex gap-2 md:gap-3 items-center">
           <input
             type="text"
             value={inputMessage}

@@ -190,12 +190,12 @@ function Sidebar({
                   value={newGroupName}
                   onChange={(e) => setNewGroupName(e.target.value)}
                   placeholder="Group name"
-                  className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-xl focus:ring-1 focus:ring-[#e45b8f] focus:border-[#e45b8f] outline-none"
+                  className="flex-1 px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-1 focus:ring-[#e45b8f] focus:border-[#e45b8f] outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                   autoFocus
                 />
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-[#e45b8f] dark:bg-[#e45b8f] text-white text-sm rounded-xl hover:bg-[#d04a7e] dark:hover:bg-[#d04a7e] font-medium transition"
+                  className="px-4 py-2 bg-[#e45b8f] dark:bg-[#e45b8f] text-white text-sm rounded-xl hover:bg-[#d04a7e] dark:hover:bg-[#d04a7e] font-medium transition flex-shrink-0"
                 >
                   Create
                 </button>

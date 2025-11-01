@@ -36,12 +36,12 @@ function Login({ onLogin, onSwitchToRegister }) {
 
   return (
     <section className="relative overflow-hidden bg-white dark:bg-gray-900 min-h-screen">
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 hidden lg:block">
         <div className="absolute inset-y-0 left-0 w-1/2 bg-[#e45b8f] dark:bg-[#d04a7e]"></div>
       </div>
 
       {/* Dark Mode Toggle - Fixed Position */}
-      <div className="absolute top-6 right-6 z-50">
+      <div className="absolute top-4 right-4 md:top-6 md:right-6 z-50">
         <Toggle
           enabled={isDark}
           onChange={toggleTheme}
@@ -55,7 +55,7 @@ function Login({ onLogin, onSwitchToRegister }) {
       </div>
 
       <div className="relative mx-auto max-w-7xl lg:grid lg:grid-cols-5 min-h-screen">
-        <div className="relative self-stretch px-4 py-16 overflow-hidden bg-[#e45b8f] dark:bg-[#d04a7e] sm:px-6 lg:col-span-2 lg:px-8 lg:py-24">
+        <div className="relative self-stretch px-4 py-12 md:py-16 overflow-hidden bg-[#e45b8f] dark:bg-[#d04a7e] sm:px-6 lg:col-span-2 lg:px-8 lg:py-24">
           <div className="absolute bottom-0 right-0 translate-x-[25%] translate-y-[75%]">
             <div className="border-[8px] border-white rounded-full w-96 h-96 opacity-20 lg:opacity-100"></div>
           </div>
@@ -68,8 +68,8 @@ function Login({ onLogin, onSwitchToRegister }) {
                 </svg>
                 <h1 className="text-2xl font-bold text-white">CU TextMe</h1>
               </div>
-              <h2 className="text-4xl font-semibold tracking-tighter text-white sm:text-5xl xl:text-6xl">Welcome back to our community</h2>
-              <p className="mt-4 text-base font-normal leading-7 text-pink-300 lg:text-lg lg:mt-6 lg:leading-8">เว็บไซต์ Chat Application สำหรับวิชา Network โดยนิสิตวิศวะคอมพิวเตอร์ CP50 จุฬา ชั้นปีที่สาม</p>
+              <h2 className="text-3xl md:text-4xl font-semibold tracking-tighter text-white sm:text-5xl xl:text-6xl">Welcome back to our community</h2>
+              <p className="mt-3 md:mt-4 text-sm md:text-base font-normal leading-6 md:leading-7 text-pink-300 lg:text-lg lg:mt-6 lg:leading-8">เว็บไซต์ Chat Application สำหรับวิชา Network โดยนิสิตวิศวะคอมพิวเตอร์ CP50 จุฬา ชั้นปีที่สาม</p>
             </div>
 
             <div className="mt-12 lg:mt-0">
@@ -96,10 +96,10 @@ function Login({ onLogin, onSwitchToRegister }) {
           </div>
         </div>
 
-        <div className="px-4 py-16 bg-white dark:bg-gray-900 sm:px-6 lg:col-span-3 lg:py-24 lg:px-8 xl:pl-12 flex items-center">
+        <div className="px-4 py-12 md:py-16 bg-white dark:bg-gray-900 sm:px-6 lg:col-span-3 lg:py-24 lg:px-8 xl:pl-12 flex items-center">
           <div className="max-w-lg mx-auto xl:max-w-xl w-full">
-            <h2 className="text-3xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-4xl lg:text-5xl">เข้าสู่ระบบ</h2>
-            <p className="mt-4 text-base font-normal leading-7 text-gray-600 dark:text-gray-400 lg:text-lg lg:mt-6 lg:leading-8">ยินดีต้อนรับกลับมา! กรุณาใส่ Username และรหัสผ่านเพื่อใช้งานระบบ</p>
+            <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-4xl lg:text-5xl">เข้าสู่ระบบ</h2>
+            <p className="mt-3 md:mt-4 text-sm md:text-base font-normal leading-6 md:leading-7 text-gray-600 dark:text-gray-400 lg:text-lg lg:mt-6 lg:leading-8">ยินดีต้อนรับกลับมา! กรุณาใส่ Username และรหัสผ่านเพื่อใช้งานระบบ</p>
 
             {error && (
               <div className="mt-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl">
@@ -107,7 +107,7 @@ function Login({ onLogin, onSwitchToRegister }) {
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="mt-12 space-y-6 sm:mt-16 lg:mt-20">
+            <form onSubmit={handleSubmit} className="mt-8 md:mt-12 space-y-5 md:space-y-6 sm:mt-16 lg:mt-20">
               <div className="space-y-5">
                 <div>
                   <label htmlFor="username" className="text-base font-medium text-gray-900 dark:text-white">Username</label>
