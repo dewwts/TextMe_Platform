@@ -59,6 +59,19 @@ body {
   }
 }
 
+/* Improve mobile scrolling */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Better scrolling for touch devices */
+@media (hover: none) and (pointer: coarse) {
+  * {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+}
+
 /* Dark mode scrollbar */
 .dark ::-webkit-scrollbar-track {
   background: #1f2937;

@@ -252,7 +252,7 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900 h-full max-h-screen overflow-hidden">
+    <div className="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900 h-full min-h-0 overflow-hidden">
       {/* Chat Header */}
       <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-2 md:px-6 py-2 md:py-4 flex items-center shadow-sm flex-shrink-0">
         {/* Mobile back button */}
@@ -278,7 +278,7 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
       </div>
 
       {/* Messages Container (R6) */}
-      <div className="flex-1 overflow-y-auto p-2 md:p-6 space-y-2 md:space-y-4">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 md:p-6 space-y-2 md:space-y-4 overscroll-behavior-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
         {isLoadingHistory ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
