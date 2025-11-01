@@ -140,6 +140,9 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
           (data.type === 'private' && data.fromUserId === targetUserId) ||
           (data.type === 'private' && data.toUserId === targetUserId)
         ) {
+
+          if (data.fromUserId === user.id) return;
+
           setMessages((prev) => [...prev, data]);
 
           // Mark as read เมื่อรับข้อความใหม่ (ถ้าหน้าต่างแชทนี้เปิดอยู่)
@@ -153,6 +156,8 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
       } else if (chatType === 'group') {
         // Group: เช็คว่าข้อความมาจากกลุ่มที่ถูกต้อง
         if (data.type === 'group' && data.groupName === targetId) {
+          if (data.fromUserId === user.id) return;
+          
           setMessages((prev) => [...prev, data]);
 
           // Mark as read เมื่อรับข้อความใหม่ (ถ้าหน้าต่างแชทนี้เปิดอยู่)
@@ -232,6 +237,18 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
       targetId: targetRoom,
       chatType
     });
+
+    // update UI now
+    const newMsg = {
+      message: trimmedMessage,
+      from: 'You',
+      fromUserId: user.id,
+      ...(chatType === 'group'
+        ? { groupName: targetId, type: 'group' }
+        : { toUserId: targetUserId, type: 'private' }),
+      timestamp: new Date().toISOString()
+    };
+    setMessages((prev) => [...prev, newMsg]); 
 
     if (chatType === 'private') {
       // (R7) ส่งข้อความส่วนตัว
