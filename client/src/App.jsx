@@ -181,7 +181,7 @@ function App() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 dark:border-blue-500 mx-auto"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#e45b8f] dark:border-[#e45b8f] mx-auto"></div>
           <p className="mt-4 text-gray-600 dark:text-gray-400 font-medium">Loading Simple Chat...</p>
         </div>
       </div>

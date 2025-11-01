@@ -6,6 +6,9 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
+  const [isTyping, setIsTyping] = useState(false);
+  const [typingUsers, setTypingUsers] = useState(new Set());
+  const typingTimeoutRef = useRef(null);
   const messagesEndRef = useRef(null);
 
   // Auto-scroll ไปข้อความล่าสุด
@@ -15,12 +18,14 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, isTyping, typingUsers]);
 
   // โหลดประวัติการแชทเมื่อเปิดหน้าต่างใหม่
   useEffect(() => {
     setMessages([]);
     setIsLoadingHistory(true);
+    setTypingUsers(new Set());
+    setIsTyping(false);
 
     if (chatType === 'private' && targetUserId) {
       // โหลดประวัติการแชทแบบ Private
@@ -94,6 +99,37 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
     }
   }, [chatType, targetId, targetUserId, user.id]);
 
+  // Listen for typing indicators
+  useEffect(() => {
+    const handleShowTypingBubble = ({ fromUsername, fromUserId }) => {
+      if (chatType === 'private' && fromUserId === targetUserId) {
+        setIsTyping(true);
+      } else if (chatType === 'group') {
+        setTypingUsers(prev => new Set([...prev, fromUsername]));
+      }
+    };
+
+    const handleHideTypingBubble = ({ fromUsername, fromUserId }) => {
+      if (chatType === 'private' && fromUserId === targetUserId) {
+        setIsTyping(false);
+      } else if (chatType === 'group') {
+        setTypingUsers(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(fromUsername);
+          return newSet;
+        });
+      }
+    };
+
+    socket.on('show_typing_bubble', handleShowTypingBubble);
+    socket.on('hide_typing_bubble', handleHideTypingBubble);
+
+    return () => {
+      socket.off('show_typing_bubble', handleShowTypingBubble);
+      socket.off('hide_typing_bubble', handleHideTypingBubble);
+    };
+  }, [chatType, targetId, targetUserId]);
+
   // (R6) รับข้อความใหม่จาก Server แบบ Real-time
   useEffect(() => {
     const handleReceiveMessage = (data) => {
@@ -137,12 +173,65 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
     };
   }, [chatType, targetId, targetUserId, user.id]);
 
+  // Handle typing indicator - practical approach
+  const handleTyping = (e) => {
+    const value = e.target.value;
+    setInputMessage(value);
+
+    // Determine target for typing event
+    const targetRoom = chatType === 'private' ? targetUserId : targetId;
+
+    // 1. ส่ง 'typing_start' ถ้ายังไม่ได้ส่ง (typingTimeoutRef.current เป็น null)
+    if (!typingTimeoutRef.current && value.trim()) {
+      socket.emit('typing_start', {
+        targetId: targetRoom,
+        chatType
+      });
+    }
+
+    // 2. เคลียร์ timeout เก่า (ถ้ามี)
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    // 3. ถ้า input ว่าง ส่ง stop ทันที
+    if (!value.trim()) {
+      socket.emit('typing_stop', {
+        targetId: targetRoom,
+        chatType
+      });
+      typingTimeoutRef.current = null;
+      return;
+    }
+
+    // 4. ตั้ง timeout ใหม่ - ส่ง stop หลังจากหยุดพิมพ์ 2 วินาที
+    typingTimeoutRef.current = setTimeout(() => {
+      socket.emit('typing_stop', {
+        targetId: targetRoom,
+        chatType
+      });
+      typingTimeoutRef.current = null; // รีเซ็ตสถานะ
+    }, 2000);
+  };
+
   // (R6, R7, R11) ส่งข้อความ
   const handleSendMessage = (e) => {
     e.preventDefault();
     const trimmedMessage = inputMessage.trim();
 
     if (!trimmedMessage) return;
+
+    // Clear typing timeout and emit stopped typing
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = null;
+    }
+
+    const targetRoom = chatType === 'private' ? targetUserId : targetId;
+    socket.emit('typing_stop', {
+      targetId: targetRoom,
+      chatType
+    });
 
     if (chatType === 'private') {
       // (R7) ส่งข้อความส่วนตัว
@@ -166,7 +255,7 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
     <div className="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900">
       {/* Chat Header */}
       <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center shadow-sm">
-        <div className="w-12 h-12 bg-blue-600 dark:bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold mr-4 text-lg">
+        <div className="w-12 h-12 bg-[#e45b8f] dark:bg-[#e45b8f] rounded-full flex items-center justify-center text-white font-semibold mr-4 text-lg">
           {chatType === 'private' ? targetName.charAt(0).toUpperCase() : '#'}
         </div>
         <div>
@@ -182,7 +271,7 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
         {isLoadingHistory ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-500 mx-auto"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#e45b8f] dark:border-[#e45b8f] mx-auto"></div>
               <p className="mt-4 text-gray-500 dark:text-gray-400 font-medium">Loading chat history...</p>
             </div>
           </div>
@@ -207,12 +296,12 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
                 <div
                   className={`max-w-xs lg:max-w-md px-4 py-3 rounded-xl ${
                     isOwnMessage
-                      ? 'bg-blue-600 dark:bg-blue-600 text-white'
+                      ? 'bg-[#e45b8f] dark:bg-[#e45b8f] text-white'
                       : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-white border border-gray-200 dark:border-gray-700 shadow-sm'
                   }`}
                 >
                   {!isOwnMessage && chatType === 'group' && (
-                    <p className="text-xs font-semibold mb-1 text-blue-600 dark:text-blue-400">
+                    <p className="text-xs font-semibold mb-1 text-[#e45b8f] dark:text-[#e45b8f]">
                       {msg.from}
                     </p>
                   )}
@@ -230,6 +319,39 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
             );
           })
         )}
+
+        {/* Typing Indicator */}
+        {chatType === 'private' && isTyping && (
+          <div className="flex justify-start">
+            <div className="max-w-xs lg:max-w-md px-4 py-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
+              <div className="flex items-center gap-1">
+                <div className="flex gap-1">
+                  <span className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                  <span className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                  <span className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {chatType === 'group' && typingUsers.size > 0 && (
+          <div className="flex justify-start">
+            <div className="max-w-xs lg:max-w-md px-4 py-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
+              <div className="flex items-center gap-2">
+                <div className="flex gap-1">
+                  <span className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                  <span className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                  <span className="w-2 h-2 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  {Array.from(typingUsers).slice(0, 3).join(', ')} {typingUsers.size > 3 ? `and ${typingUsers.size - 3} more` : ''} {typingUsers.size === 1 ? 'is' : 'are'} typing...
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div ref={messagesEndRef} />
       </div>
 
@@ -239,9 +361,9 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
           <input
             type="text"
             value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
+            onChange={handleTyping}
             placeholder="Type a message..."
-            className="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-1 focus:ring-blue-600 dark:focus:ring-blue-500 focus:border-blue-600 dark:focus:border-blue-500 outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+            className="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-1 focus:ring-[#e45b8f] dark:focus:ring-[#e45b8f] focus:border-[#e45b8f] dark:focus:border-[#e45b8f] outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
             disabled={isLoadingHistory}
           />
           <Button

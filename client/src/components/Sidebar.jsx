@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import socket from '../socket';
 import Button from './Button';
-import Toggle from './Toggle';
 import { useTheme } from '../contexts/ThemeContext';
 
 function Sidebar({
@@ -63,7 +62,7 @@ function Sidebar({
   return (
     <div className="w-80 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col">
       {/* Header */}
-      <div className="p-4 bg-blue-600 dark:bg-blue-700 text-white">
+      <div className="p-4 bg-[#e45b8f] dark:bg-[#d04a7e] text-white">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
             <svg className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -71,26 +70,35 @@ function Sidebar({
             </svg>
             <div>
               <h2 className="text-xl font-bold">Simple Chat</h2>
-              <p className="text-sm text-blue-100">@{user.username}</p>
+              <p className="text-sm text-pink-100">@{user.username}</p>
             </div>
           </div>
           <Button
             onClick={onLogout}
             variant="secondary"
             size="sm"
-            className="!bg-white !text-blue-600 hover:!bg-blue-50 dark:!bg-gray-800 dark:!text-blue-400 dark:hover:!bg-gray-700"
+            className="!bg-white !text-[#e45b8f] hover:!bg-pink-50 dark:!bg-gray-800 dark:!text-[#e45b8f] dark:hover:!bg-gray-700"
           >
             Logout
           </Button>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-sm text-blue-100">Theme</span>
-          <Toggle
-            enabled={isDark}
-            onChange={toggleTheme}
-            label={isDark ? '🌙' : '☀️'}
-            size="sm"
-          />
+          <span className="text-sm text-pink-100 font-medium">Theme</span>
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-lg hover:bg-[#d04a7e] dark:hover:bg-[#c93b6d] transition-colors"
+            aria-label="Toggle theme"
+          >
+            {isDark ? (
+              <svg className="w-5 h-5 text-yellow-300" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+              </svg>
+            )}
+          </button>
         </div>
       </div>
 
@@ -120,14 +128,14 @@ function Sidebar({
                   <button
                     key={otherUser.socketId}
                     onClick={() => handleUserClick(otherUser)}
-                    className={`w-full text-left px-3 py-2 rounded-xl hover:bg-blue-50 dark:hover:bg-gray-800 transition flex items-center justify-between ${
+                    className={`w-full text-left px-3 py-2 rounded-xl hover:bg-pink-50 dark:hover:bg-gray-800 transition flex items-center justify-between ${
                       activeChat?.type === 'private' && activeChat?.targetUserId === otherUser.userId
-                        ? 'bg-blue-100 dark:bg-gray-800 border border-blue-200 dark:border-gray-700'
+                        ? 'bg-pink-100 dark:bg-gray-800 border border-pink-200 dark:border-gray-700'
                         : 'border border-transparent'
                     }`}
                   >
                     <div className="flex items-center flex-1">
-                      <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold mr-3 text-base">
+                      <div className="w-10 h-10 bg-[#e45b8f] rounded-full flex items-center justify-center text-white font-semibold mr-3 text-base">
                         {otherUser.username.charAt(0).toUpperCase()}
                       </div>
                       <span className="font-medium text-gray-900 dark:text-white">{otherUser.username}</span>
@@ -155,7 +163,7 @@ function Sidebar({
             </h3>
             <button
               onClick={() => setShowCreateGroup(!showCreateGroup)}
-              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-semibold"
+              className="text-[#e45b8f] dark:text-[#e45b8f] hover:text-[#d04a7e] dark:hover:text-[#f06fa0] text-sm font-semibold"
             >
               + Create
             </button>
@@ -170,12 +178,12 @@ function Sidebar({
                   value={newGroupName}
                   onChange={(e) => setNewGroupName(e.target.value)}
                   placeholder="Group name"
-                  className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-xl focus:ring-1 focus:ring-blue-600 focus:border-blue-600 outline-none"
+                  className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-xl focus:ring-1 focus:ring-[#e45b8f] focus:border-[#e45b8f] outline-none"
                   autoFocus
                 />
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 dark:bg-blue-600 text-white text-sm rounded-xl hover:bg-blue-700 dark:hover:bg-blue-700 font-medium transition"
+                  className="px-4 py-2 bg-[#e45b8f] dark:bg-[#e45b8f] text-white text-sm rounded-xl hover:bg-[#d04a7e] dark:hover:bg-[#d04a7e] font-medium transition"
                 >
                   Create
                 </button>
@@ -197,15 +205,15 @@ function Sidebar({
                   <button
                     key={group.groupName}
                     onClick={() => handleGroupClick(group)}
-                    className={`w-full text-left px-3 py-2 rounded-xl hover:bg-blue-50 dark:hover:bg-gray-800 transition ${
+                    className={`w-full text-left px-3 py-2 rounded-xl hover:bg-pink-50 dark:hover:bg-gray-800 transition ${
                       activeChat?.type === 'group' && activeChat?.targetId === group.groupName
-                        ? 'bg-blue-100 dark:bg-gray-800 border border-blue-200 dark:border-gray-700'
+                        ? 'bg-pink-100 dark:bg-gray-800 border border-pink-200 dark:border-gray-700'
                         : 'border border-transparent'
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center flex-1">
-                        <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold mr-3 text-lg">
+                        <div className="w-10 h-10 bg-[#e45b8f] rounded-full flex items-center justify-center text-white font-semibold mr-3 text-lg">
                           #
                         </div>
                         <div className="flex-1">

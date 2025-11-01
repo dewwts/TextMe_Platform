@@ -37,7 +37,7 @@ function Login({ onLogin, onSwitchToRegister }) {
   return (
     <section className="relative overflow-hidden bg-white dark:bg-gray-900 min-h-screen">
       <div className="absolute inset-0">
-        <div className="absolute inset-y-0 left-0 w-1/2 bg-blue-600 dark:bg-blue-700"></div>
+        <div className="absolute inset-y-0 left-0 w-1/2 bg-[#e45b8f] dark:bg-[#d04a7e]"></div>
       </div>
 
       {/* Dark Mode Toggle - Fixed Position */}
@@ -55,7 +55,7 @@ function Login({ onLogin, onSwitchToRegister }) {
       </div>
 
       <div className="relative mx-auto max-w-7xl lg:grid lg:grid-cols-5 min-h-screen">
-        <div className="relative self-stretch px-4 py-16 overflow-hidden bg-blue-600 dark:bg-blue-700 sm:px-6 lg:col-span-2 lg:px-8 lg:py-24">
+        <div className="relative self-stretch px-4 py-16 overflow-hidden bg-[#e45b8f] dark:bg-[#d04a7e] sm:px-6 lg:col-span-2 lg:px-8 lg:py-24">
           <div className="absolute bottom-0 right-0 translate-x-[25%] translate-y-[75%]">
             <div className="border-[8px] border-white rounded-full w-96 h-96 opacity-20 lg:opacity-100"></div>
           </div>
@@ -66,10 +66,10 @@ function Login({ onLogin, onSwitchToRegister }) {
                 <svg className="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
-                <h1 className="text-2xl font-bold text-white">Simple Chat</h1>
+                <h1 className="text-2xl font-bold text-white">CU TextMe</h1>
               </div>
               <h2 className="text-4xl font-semibold tracking-tighter text-white sm:text-5xl xl:text-6xl">Welcome back to our community</h2>
-              <p className="mt-4 text-base font-normal leading-7 text-blue-300 lg:text-lg lg:mt-6 lg:leading-8">Connect with friends, share moments, and stay in touch with real-time messaging that keeps you close to the people who matter most.</p>
+              <p className="mt-4 text-base font-normal leading-7 text-pink-300 lg:text-lg lg:mt-6 lg:leading-8">เว็บไซต์ Chat Application สำหรับวิชา Network โดยนิสิตวิศวะคอมพิวเตอร์ CP50 จุฬา ชั้นปีที่สาม</p>
             </div>
 
             <div className="mt-12 lg:mt-0">
@@ -81,15 +81,15 @@ function Login({ onLogin, onSwitchToRegister }) {
                 ))}
               </div>
               <blockquote className="mt-8">
-                <p className="text-xl font-normal text-white">"Simple Chat has transformed how our team communicates. The real-time features and intuitive interface make staying connected effortless."</p>
+                <p className="text-xl font-normal text-white">"ขอ A วิชาคอมพิวเตอร์ Network ได้ไหมครับ ขี้เกียจเรียนแล้วครับ GG ปล. ขี้เกียจเรียนทุกวิชา"</p>
               </blockquote>
               <div className="flex items-center mt-6">
                 <div className="w-11 h-11 rounded-full bg-white/20 flex items-center justify-center text-white font-semibold text-lg">
-                  SC
+                  TS
                 </div>
                 <div className="ml-4">
-                  <p className="text-base font-semibold text-white">Sarah Chen</p>
-                  <p className="text-sm font-normal text-gray-300">Product Manager, TechCorp</p>
+                  <p className="text-base font-semibold text-white">Tinnapat S.</p>
+                  <p className="text-sm font-normal text-gray-300">คนที่ขี้เกียจเรียนที่สุด</p>
                 </div>
               </div>
             </div>
@@ -98,8 +98,8 @@ function Login({ onLogin, onSwitchToRegister }) {
 
         <div className="px-4 py-16 bg-white dark:bg-gray-900 sm:px-6 lg:col-span-3 lg:py-24 lg:px-8 xl:pl-12 flex items-center">
           <div className="max-w-lg mx-auto xl:max-w-xl w-full">
-            <h2 className="text-3xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-4xl lg:text-5xl">Sign in to your account</h2>
-            <p className="mt-4 text-base font-normal leading-7 text-gray-600 dark:text-gray-400 lg:text-lg lg:mt-6 lg:leading-8">Welcome back! Please enter your details to continue.</p>
+            <h2 className="text-3xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-4xl lg:text-5xl">เข้าสู่ระบบ</h2>
+            <p className="mt-4 text-base font-normal leading-7 text-gray-600 dark:text-gray-400 lg:text-lg lg:mt-6 lg:leading-8">ยินดีต้อนรับกลับมา! กรุณาใส่ Username และรหัสผ่านเพื่อใช้งานระบบ</p>
 
             {error && (
               <div className="mt-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl">
@@ -119,7 +119,7 @@ function Login({ onLogin, onSwitchToRegister }) {
                       value={formData.username}
                       onChange={handleChange}
                       placeholder="Enter your username"
-                      className="block w-full px-4 py-4 text-base text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:border-blue-600 dark:focus:border-blue-500 focus:ring-1 focus:ring-blue-600 dark:focus:ring-blue-500"
+                      className="block w-full px-4 py-4 text-base text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:border-[#e45b8f] dark:focus:border-[#e45b8f] focus:ring-1 focus:ring-[#e45b8f] dark:focus:ring-[#e45b8f]"
                       required
                       autoFocus
                     />
@@ -136,7 +136,7 @@ function Login({ onLogin, onSwitchToRegister }) {
                       value={formData.password}
                       onChange={handleChange}
                       placeholder="Enter your password"
-                      className="block w-full px-4 py-4 text-base text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:border-blue-600 dark:focus:border-blue-500 focus:ring-1 focus:ring-blue-600 dark:focus:ring-blue-500"
+                      className="block w-full px-4 py-4 text-base text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:border-[#e45b8f] dark:focus:border-[#e45b8f] focus:ring-1 focus:ring-[#e45b8f] dark:focus:ring-[#e45b8f]"
                       required
                     />
                   </div>
@@ -156,7 +156,7 @@ function Login({ onLogin, onSwitchToRegister }) {
 
             <p className="mt-6 text-sm font-normal text-gray-500 dark:text-gray-400">
               Don't have an account?{' '}
-              <button onClick={onSwitchToRegister} className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+              <button onClick={onSwitchToRegister} className="text-sm font-semibold text-[#e45b8f] dark:text-[#e45b8f] hover:underline">
                 Sign up
               </button>
             </p>

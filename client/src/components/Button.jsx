@@ -26,8 +26,8 @@ function Button({
 
   // Variant styles
   const variants = {
-    primary: 'bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed dark:bg-blue-600 dark:hover:bg-blue-700',
-    secondary: 'bg-white text-blue-600 border border-blue-600 hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:text-blue-400 dark:border-blue-400 dark:hover:bg-gray-700',
+    primary: 'bg-[#e45b8f] hover:bg-[#d04a7e] text-white disabled:opacity-50 disabled:cursor-not-allowed dark:bg-[#e45b8f] dark:hover:bg-[#d04a7e]',
+    secondary: 'bg-white text-[#e45b8f] border border-[#e45b8f] hover:bg-pink-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:text-[#e45b8f] dark:border-[#e45b8f] dark:hover:bg-gray-700',
     danger: 'bg-red-600 hover:bg-red-700 text-white disabled:opacity-50 disabled:cursor-not-allowed dark:bg-red-600 dark:hover:bg-red-700',
     ghost: 'bg-transparent hover:bg-gray-100 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed dark:text-gray-300 dark:hover:bg-gray-800'
   };

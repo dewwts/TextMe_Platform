@@ -372,6 +372,55 @@ io.on('connection', (socket) => {
     socket.emit('joined_group', { groupName });
   });
 
+  // Typing indicator - practical approach with start/stop
+  socket.on('typing_start', ({ targetId, chatType }) => {
+    const fromData = users.get(socket.id);
+    if (!fromData) return;
+
+    if (chatType === 'private') {
+      // Find the target user's socket
+      const targetSocketId = Array.from(users.entries())
+        .find(([sid, data]) => data.userId === targetId)?.[0];
+
+      if (targetSocketId) {
+        io.to(targetSocketId).emit('show_typing_bubble', {
+          fromUsername: fromData.username,
+          fromUserId: fromData.userId
+        });
+      }
+    } else if (chatType === 'group') {
+      // Broadcast to all members in the group except sender
+      socket.to(targetId).emit('show_typing_bubble', {
+        fromUsername: fromData.username,
+        fromUserId: fromData.userId
+      });
+    }
+  });
+
+  socket.on('typing_stop', ({ targetId, chatType }) => {
+    const fromData = users.get(socket.id);
+    if (!fromData) return;
+
+    if (chatType === 'private') {
+      // Find the target user's socket
+      const targetSocketId = Array.from(users.entries())
+        .find(([sid, data]) => data.userId === targetId)?.[0];
+
+      if (targetSocketId) {
+        io.to(targetSocketId).emit('hide_typing_bubble', {
+          fromUsername: fromData.username,
+          fromUserId: fromData.userId
+        });
+      }
+    } else if (chatType === 'group') {
+      // Broadcast to all members in the group except sender
+      socket.to(targetId).emit('hide_typing_bubble', {
+        fromUsername: fromData.username,
+        fromUserId: fromData.userId
+      });
+    }
+  });
+
   // (R11) Group Message - ส่งข้อความในกลุ่ม
   socket.on('send_group_message', async ({ groupName, message }) => {
     try {

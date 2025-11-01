@@ -8,7 +8,10 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Kanit', 'sans-serif'],
+        sans: ['CHULALONGKORN', 'sans-serif'],
+      },
+      colors: {
+        'pink-primary': '#e45b8f',
       },
     },
   },

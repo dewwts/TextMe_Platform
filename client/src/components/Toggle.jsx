@@ -39,9 +39,9 @@ function Toggle({ enabled, onChange, label, size = 'md' }) {
       <button
         type="button"
         onClick={onChange}
-        className={`${sizeConfig.container} relative inline-flex items-center rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 dark:focus:ring-offset-gray-900 ${
+        className={`${sizeConfig.container} relative inline-flex items-center rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#e45b8f] focus:ring-offset-2 dark:focus:ring-offset-gray-900 ${
           enabled
-            ? 'bg-blue-600 dark:bg-blue-600'
+            ? 'bg-[#e45b8f] dark:bg-[#e45b8f]'
             : 'bg-gray-300 dark:bg-gray-700'
         }`}
         role="switch"

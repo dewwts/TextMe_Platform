@@ -12,10 +12,10 @@ function UsernameInput({ onSetUsername }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-400 to-pink-600">
       <div className="bg-white p-8 rounded-lg shadow-2xl w-full max-w-md">
         <div className="text-center mb-6">
-          <svg className="mx-auto h-16 w-16 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="mx-auto h-16 w-16 text-[#e45b8f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
           </svg>
           <h1 className="text-3xl font-bold text-gray-800 mt-4">Simple Chat</h1>
@@ -33,7 +33,7 @@ function UsernameInput({ onSetUsername }) {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               placeholder="Enter your username"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#e45b8f] focus:border-transparent outline-none transition"
               autoFocus
               required
             />
@@ -41,7 +41,7 @@ function UsernameInput({ onSetUsername }) {
 
           <button
             type="submit"
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-lg transition duration-200 ease-in-out transform hover:scale-105"
+            className="w-full bg-[#e45b8f] hover:bg-[#d04a7e] text-white font-semibold py-3 rounded-lg transition duration-200 ease-in-out transform hover:scale-105"
           >
             Join Chat
           </button>
