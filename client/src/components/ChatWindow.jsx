@@ -140,8 +140,9 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
           (data.type === 'private' && data.fromUserId === targetUserId) ||
           (data.type === 'private' && data.toUserId === targetUserId)
         ) {
-          setMessages((prev) => [...prev, data]);
 
+          setMessages((prev) => [...prev, data]);
+          
           // Mark as read เมื่อรับข้อความใหม่ (ถ้าหน้าต่างแชทนี้เปิดอยู่)
           if (data.fromUserId === targetUserId) {
             socket.emit('mark_private_read', {
@@ -153,7 +154,15 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
       } else if (chatType === 'group') {
         // Group: เช็คว่าข้อความมาจากกลุ่มที่ถูกต้อง
         if (data.type === 'group' && data.groupName === targetId) {
-          setMessages((prev) => [...prev, data]);
+          //check if own message 
+          const isOwn = data.fromUserId === user.id;
+          const message = {
+            ...data,
+            from: isOwn ? 'You' : data.from,
+            isOwnMessage: isOwn
+          };
+
+          setMessages((prev) => [...prev, message]);
 
           // Mark as read เมื่อรับข้อความใหม่ (ถ้าหน้าต่างแชทนี้เปิดอยู่)
           if (data.fromUserId !== user.id) {
