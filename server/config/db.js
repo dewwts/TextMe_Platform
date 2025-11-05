@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-export const connectDB = async()=>{
+const connectDB = async()=>{
     const mongo_URI = process.env.MONGODB_URI
     if (!mongo_URI){
         console.error("MONGO_URI is not set");
