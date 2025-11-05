@@ -217,7 +217,9 @@ function Sidebar({
                 // หา Unread Count สำหรับ Group นี้
                 const unread = unreadCounts.group.find(g => g.groupName === group.groupName);
                 const unreadCount = unread ? unread.count : 0;
-
+                if (activeChat?.type === 'group' && activeChat?.targetId === group.groupName) {
+                  unreadCount = 0;
+                }
                 return (
                   <button
                     key={group.groupName}
