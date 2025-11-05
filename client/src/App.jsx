@@ -65,6 +65,7 @@ function App() {
 
     // (R9) รับรายชื่อ Groups
     socket.on('update_group_list', (groups) => {
+      console.log(groups);
       setGroupList(groups);
     });
 

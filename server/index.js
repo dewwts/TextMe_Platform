@@ -141,7 +141,7 @@ io.on('connection', (socket) => {
 
     // Broadcast รายชื่อ Active Users
     io.emit('update_user_list', getActiveUsers());
-    io.emit('update_group_list', getGroupList())
+    io.emit('update_group_list', getGroupList());
     // สามารถ emit group ทั้งหมดได้ตรงนี้
     // ส่งจำนวนข้อความที่ยังไม่ได้อ่านกลับไป
     const unreadCounts = await getUnreadCounts(userId);
