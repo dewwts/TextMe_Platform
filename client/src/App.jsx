@@ -60,7 +60,8 @@ function App() {
     // (R4) รับรายชื่อ Active Users
     socket.on('update_user_list', (users) => {
       // กรอง user ตัวเองออก
-      setActiveUsers(users.filter(u => u.userId !== user.id));
+      // setActiveUsers(users.filter(u => u.userId !== user.id));
+      setActiveChats(users); // รวมตัวเองด้วย
     });
 
     // (R9) รับรายชื่อ Groups

@@ -485,9 +485,9 @@ io.on('connection', (socket) => {
     users.delete(socket.id);
 
     // ลบ User ออกจากกลุ่มทั้งหมด
-    groups.forEach((members, groupName) => {
-      members.delete(socket.id);
-    });
+    // groups.forEach((members, groupName) => {
+    //   members.delete(socket.id);
+    // });
 
     // (R4) Broadcast รายชื่อ Active Users ที่อัปเดต
     io.emit('update_user_list', getActiveUsers());
