@@ -215,7 +215,7 @@ function App() {
 
   // Main Chat Interface
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900 overflow-hidden relative">
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900 overflow-x-hidden relative">
       {/* Mobile Overlay */}
       {isSidebarOpen && (
         <div
