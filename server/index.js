@@ -4,7 +4,8 @@ const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken');
+// const jwt = require('jsonwebtoken');
+const { connectDB } = require('./config/db')
 
 // Import Models
 const User = require('./models/User');
@@ -33,9 +34,10 @@ const io = new Server(server, {
 });
 
 // เชื่อมต่อ MongoDB
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('✅ Connected to MongoDB'))
-  .catch((err) => console.error('❌ MongoDB connection error:', err));
+// mongoose.connect(process.env.MONGODB_URI)
+//   .then(() => console.log('✅ Connected to MongoDB'))
+//   .catch((err) => console.error('❌ MongoDB connection error:', err));
+connectDB()
 
 // เก็บข้อมูล Users และ Groups (In-memory for real-time tracking)
 const users = new Map(); // Map<socket.id, { username, userId }>
