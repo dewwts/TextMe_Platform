@@ -458,7 +458,7 @@ io.on('connection', (socket) => {
         from: fromUsername,
         fromSocketId: socket.id,
         fromUserId: fromData.userId,
-        groupName,
+        groupName: groupName,
         type: 'group',
         timestamp: newMessage.timestamp
       });
