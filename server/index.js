@@ -274,7 +274,7 @@ io.on('connection', (socket) => {
 
       // ส่ง Unread Counts ที่อัปเดตกลับไป
       const unreadCounts = await getUnreadCounts(userId,socket.id);
-      socket.to().emit('unread_counts', unreadCounts);
+      socket.emit('unread_counts', unreadCounts);
     } catch (error) {
       console.error('[ERROR] Marking group messages as read:', error);
     }
