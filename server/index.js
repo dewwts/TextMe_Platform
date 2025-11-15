@@ -19,7 +19,9 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
-
+const users = new Map(); // Map<socket.id, { username, userId }>
+const groups = new Map(); // Map<groupName, Set<socket.id>>
+app.set("users", users)
 // API Routes
 app.use('/api/auth', authRoutes);
 
@@ -40,8 +42,6 @@ const io = new Server(server, {
 connectDB()
 
 // เก็บข้อมูล Users และ Groups (In-memory for real-time tracking)
-const users = new Map(); // Map<socket.id, { username, userId }>
-const groups = new Map(); // Map<groupName, Set<socket.id>>
 
 // Helper: ดึงรายชื่อ Active Users ทั้งหมด
 function getActiveUsers() {
