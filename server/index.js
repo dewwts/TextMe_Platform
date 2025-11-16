@@ -45,15 +45,18 @@ connectDB()
 
 // Helper: ดึงรายชื่อ Active Users ทั้งหมด
 function getActiveUsers() {
-  const activeUsers = [];
+  const uniqueUsers = new Map(); // ใช้ Map เพื่อเก็บ userId ที่ไม่ซ้ำ
+  
   users.forEach((userData, socketId) => {
-    activeUsers.push({
-      socketId,
-      username: userData.username,
+    if (!uniqueUsers.has(userData.userId)) {
+      uniqueUsers.set(userData.userId, {
+      socketId, // ใช้ socketId ของ connection แรกที่เราเจอ
+       username: userData.username,
       userId: userData.userId
     });
+    }
   });
-  return activeUsers;
+  return Array.from(uniqueUsers.values());
 }
 
 // Helper: ดึงรายชื่อ Groups พร้อมสมาชิก
