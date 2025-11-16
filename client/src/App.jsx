@@ -60,7 +60,8 @@ function App() {
     // (R4) รับรายชื่อ Active Users
     socket.on('update_user_list', (users) => {
       // กรอง user ตัวเองออก
-      setActiveUsers(users.filter(u => u.userId !== user.id));
+      // setActiveUsers(users.filter(u => u.userId !== user.id));
+      setActiveUsers(users); // รวมตัวเองด้วย
     });
 
     // (R9) รับรายชื่อ Groups
@@ -214,7 +215,7 @@ function App() {
 
   // Main Chat Interface
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900 overflow-hidden relative">
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900 overflow-x-hidden relative">
       {/* Mobile Overlay */}
       {isSidebarOpen && (
         <div

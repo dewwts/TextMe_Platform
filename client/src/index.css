@@ -49,7 +49,7 @@ body {
   height: 100vh;
   height: 100dvh; /* Dynamic viewport height for mobile browsers */
   width: 100vw;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 /* Support for browsers that don't support dvh */

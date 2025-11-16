@@ -163,9 +163,8 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
           };
 
           setMessages((prev) => [...prev, message]);
-
           // Mark as read เมื่อรับข้อความใหม่ (ถ้าหน้าต่างแชทนี้เปิดอยู่)
-          if (data.fromUserId !== user.id) {
+          if (data.groupName === targetId) {
             socket.emit('mark_group_read', {
               userId: user.id,
               groupName: targetId

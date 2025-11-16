@@ -4,7 +4,8 @@ const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken');
+// const jwt = require('jsonwebtoken');
+const { connectDB } = require('./config/db')
 
 // Import Models
 const User = require('./models/User');
@@ -18,7 +19,9 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
-
+const users = new Map(); // Map<socket.id, { username, userId }>
+const groups = new Map(); // Map<groupName, Set<socket.id>>
+app.set("users", users)
 // API Routes
 app.use('/api/auth', authRoutes);
 
@@ -33,25 +36,27 @@ const io = new Server(server, {
 });
 
 // เชื่อมต่อ MongoDB
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('✅ Connected to MongoDB'))
-  .catch((err) => console.error('❌ MongoDB connection error:', err));
+// mongoose.connect(process.env.MONGODB_URI)
+//   .then(() => console.log('✅ Connected to MongoDB'))
+//   .catch((err) => console.error('❌ MongoDB connection error:', err));
+connectDB()
 
 // เก็บข้อมูล Users และ Groups (In-memory for real-time tracking)
-const users = new Map(); // Map<socket.id, { username, userId }>
-const groups = new Map(); // Map<groupName, Set<socket.id>>
 
 // Helper: ดึงรายชื่อ Active Users ทั้งหมด
 function getActiveUsers() {
-  const activeUsers = [];
+  const uniqueUsers = new Map(); // ใช้ Map เพื่อเก็บ userId ที่ไม่ซ้ำ
+  
   users.forEach((userData, socketId) => {
-    activeUsers.push({
-      socketId,
-      username: userData.username,
+    if (!uniqueUsers.has(userData.userId)) {
+      uniqueUsers.set(userData.userId, {
+      socketId, // ใช้ socketId ของ connection แรกที่เราเจอ
+       username: userData.username,
       userId: userData.userId
     });
+    }
   });
-  return activeUsers;
+  return Array.from(uniqueUsers.values());
 }
 
 // Helper: ดึงรายชื่อ Groups พร้อมสมาชิก
@@ -68,7 +73,7 @@ function getGroupList() {
 }
 
 // Helper: นับจำนวนข้อความที่ยังไม่ได้อ่าน
-async function getUnreadCounts(userId) {
+async function getUnreadCounts(userId,socketID) {
   try {
     const userObjectId = new mongoose.Types.ObjectId(userId);
 
@@ -107,14 +112,17 @@ async function getUnreadCounts(userId) {
         }
       }
     ]);
-
+    const filteredGroupUnread = groupUnread.filter(item =>{
+      const groupName = item._id;
+      return groups.has(groupName) && groups.get(groupName).has(socketID);
+    });
     const result = {
       private: privateUnread.map(item => ({
         userId: item._id.toString(),
         username: item.senderUsername,
         count: item.count
       })),
-      group: groupUnread.map(item => ({
+      group: filteredGroupUnread.map(item => ({
         groupName: item._id,
         count: item.count
       }))
@@ -139,9 +147,10 @@ io.on('connection', (socket) => {
 
     // Broadcast รายชื่อ Active Users
     io.emit('update_user_list', getActiveUsers());
-
+    io.emit('update_group_list', getGroupList());
+    // สามารถ emit group ทั้งหมดได้ตรงนี้
     // ส่งจำนวนข้อความที่ยังไม่ได้อ่านกลับไป
-    const unreadCounts = await getUnreadCounts(userId);
+    const unreadCounts = await getUnreadCounts(userId,socket.id);
     console.log(`[EMIT] Sending unread_counts to ${username}:`, unreadCounts);
     socket.emit('unread_counts', unreadCounts);
   });
@@ -227,7 +236,7 @@ io.on('connection', (socket) => {
       console.log(`[MARK_READ] ${fromData.username} marked messages from ${otherUserId} as read`);
 
       // ส่ง Unread Counts ที่อัปเดตกลับไป
-      const unreadCounts = await getUnreadCounts(userId);
+      const unreadCounts = await getUnreadCounts(userId,socket.id);
       socket.emit('unread_counts', unreadCounts);
 
       // แจ้งผู้ส่งว่าข้อความถูกอ่านแล้ว (ถ้าออนไลน์)
@@ -267,7 +276,7 @@ io.on('connection', (socket) => {
       console.log(`[MARK_READ] ${fromData.username} marked messages in ${groupName} as read`);
 
       // ส่ง Unread Counts ที่อัปเดตกลับไป
-      const unreadCounts = await getUnreadCounts(userId);
+      const unreadCounts = await getUnreadCounts(userId,socket.id);
       socket.emit('unread_counts', unreadCounts);
     } catch (error) {
       console.error('[ERROR] Marking group messages as read:', error);
@@ -327,7 +336,7 @@ io.on('connection', (socket) => {
 
       // อัปเดต Unread Count สำหรับผู้รับ
       if (toData) {
-        const unreadCounts = await getUnreadCounts(toUserId);
+        const unreadCounts = await getUnreadCounts(toUserId,socket.id);
         io.to(toSocketId).emit('unread_counts', unreadCounts);
       }
     } catch (error) {
@@ -452,7 +461,7 @@ io.on('connection', (socket) => {
         from: fromUsername,
         fromSocketId: socket.id,
         fromUserId: fromData.userId,
-        groupName,
+        groupName: groupName,
         type: 'group',
         timestamp: newMessage.timestamp
       });
@@ -463,7 +472,7 @@ io.on('connection', (socket) => {
         for (const memberSocketId of groupMembers) {
           const memberData = users.get(memberSocketId);
           if (memberData && memberData.userId !== fromData.userId) {
-            const unreadCounts = await getUnreadCounts(memberData.userId);
+            const unreadCounts = await getUnreadCounts(memberData.userId, socket.id);
             io.to(memberSocketId).emit('unread_counts', unreadCounts);
           }
         }

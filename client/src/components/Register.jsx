@@ -59,7 +59,7 @@ function Register({ onRegister, onSwitchToLogin }) {
   };
 
   return (
-    <section className="relative bg-white dark:bg-gray-900 min-h-screen overflow-x-hidden">
+    <section className="relative bg-white dark:bg-gray-900 overflow-x-hidden min-h-screen max-h-fit">
       <div className="absolute inset-0 hidden lg:block">
         <div className="absolute inset-y-0 left-0 w-1/2 bg-[#e45b8f] dark:bg-[#d04a7e]"></div>
       </div>
