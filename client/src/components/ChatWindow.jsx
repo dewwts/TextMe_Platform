@@ -154,7 +154,7 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
       } else if (chatType === 'group') {
         // Group: เช็คว่าข้อความมาจากกลุ่มที่ถูกต้อง
         if (data.type === 'group' && data.groupName === targetId) {
-          //check if own message 
+          //check if own message
           const isOwn = data.fromUserId === user.id;
           const message = {
             ...data,
