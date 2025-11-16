@@ -84,7 +84,7 @@ const SignInUser = async (req, res) => {
         break
       }      
     }
-    if (check){
+    if (!check){
       res.json({
         success: false,
         message: 'Login failed',
