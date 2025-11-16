@@ -57,7 +57,7 @@ try {
 const SignInUser = async (req, res) => {
   try {
     const { username, password } = req.body;
-    const users = req.app.get("users")
+    // const users = req.app.get("users")
     // ค้นหา User
     const user = await User.findOne({ username });
 
@@ -77,21 +77,21 @@ const SignInUser = async (req, res) => {
         message: 'Invalid username or password'
       });
     }
-    let check = true
-    for (const [socket, userInfo] of users){
-      if (userInfo.username == username){
-        check = false
-        break
-      }      
-    }
-    if (!check){
-      res.json({
-        success: false,
-        message: 'Login failed',
-        user: {
-        }
-      });
-    }
+    // let check = true
+    // for (const [socket, userInfo] of users){
+    //   if (userInfo.username == username){
+    //     check = false
+    //     break
+    //   }      
+    // }
+    // if (!check){
+    //   res.json({
+    //     success: false,
+    //     message: 'Login failed',
+    //     user: {
+    //     }
+    //   });
+    // }
     // สร้าง JWT Token
     const token = jwt.sign(
       { userId: user._id, username: user.username },
