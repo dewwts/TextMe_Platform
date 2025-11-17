@@ -45,12 +45,12 @@ connectDB()
 
 // Helper: ดึงรายชื่อ Active Users ทั้งหมด
 function getActiveUsers() {
-  const uniqueUsers = new Map(); // ใช้ Map เพื่อเก็บ userId ที่ไม่ซ้ำ
+  const uniqueUsers = new Map(); 
   
   users.forEach((userData, socketId) => {
     if (!uniqueUsers.has(userData.userId)) {
       uniqueUsers.set(userData.userId, {
-      socketId, // ใช้ socketId ของ connection แรกที่เราเจอ
+      socketId,
        username: userData.username,
       userId: userData.userId
     });
@@ -148,8 +148,6 @@ io.on('connection', (socket) => {
     // Broadcast รายชื่อ Active Users
     io.emit('update_user_list', getActiveUsers());
     io.emit('update_group_list', getGroupList());
-    // สามารถ emit group ทั้งหมดได้ตรงนี้
-    // ส่งจำนวนข้อความที่ยังไม่ได้อ่านกลับไป
     const unreadCounts = await getUnreadCounts(userId,socket.id);
     console.log(`[EMIT] Sending unread_counts to ${username}:`, unreadCounts);
     socket.emit('unread_counts', unreadCounts);
@@ -158,7 +156,6 @@ io.on('connection', (socket) => {
   // ดึงประวัติการแชทแบบ Private
   socket.on('load_private_history', async ({ userId, otherUserId }) => {
     try {
-      // ดึงข้อความระหว่าง 2 คน (ทั้งที่ส่งและรับ)
       const messages = await Message.find({
         type: 'private',
         $or: [
@@ -167,7 +164,7 @@ io.on('connection', (socket) => {
         ]
       })
       .sort({ timestamp: 1 })
-      .limit(100); // จำกัดแค่ 100 ข้อความล่าสุด
+      .limit(100);
 
       socket.emit('private_history', {
         otherUserId,
@@ -193,7 +190,7 @@ io.on('connection', (socket) => {
         groupName
       })
       .sort({ timestamp: 1 })
-      .limit(100); // จำกัดแค่ 100 ข้อความล่าสุด
+      .limit(100); 
 
       socket.emit('group_history', {
         groupName,
@@ -351,7 +348,7 @@ io.on('connection', (socket) => {
       console.log(`[CREATE_GROUP] Group created: ${groupName}`);
     }
 
-    // ให้ผู้สร้างเข้าร่วมกลุ่มทันที
+    // Builder join group auto
     groups.get(groupName).add(socket.id);
     socket.join(groupName);
 
@@ -444,7 +441,6 @@ io.on('connection', (socket) => {
 
       console.log(`[GROUP_MESSAGE] ${fromUsername} in ${groupName}: ${message}`);
 
-      // บันทึกข้อความลง MongoDB
       const newMessage = new Message({
         type: 'group',
         sender: fromData.userId,

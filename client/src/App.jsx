@@ -66,6 +66,7 @@ function App() {
 
     // (R9) รับรายชื่อ Groups
     socket.on('update_group_list', (groups) => {
+      console.log(groups);
       setGroupList(groups);
     });
 
@@ -158,17 +159,41 @@ function App() {
   };
 
   // (R5) ฟังก์ชันเปิดหน้าต่างแชท
+  // ...existing code...
+  // (R5) ฟังก์ชันเปิดหน้าต่างแชท
   const handleOpenChat = (type, targetId, targetName, targetUserId, targetSocketId) => {
+    // หา members ถ้าเป็น group
+    let members = null;
+    if (type === 'group') {
+      const group = groupList.find(g => {
+        const name = g.name ?? g.groupName ?? g.targetId;
+        return name === targetId || name === targetName;
+      });
+      members = Array.isArray(group?.members)
+        ? group.members
+        : Array.isArray(group?.memberList)
+          ? group.memberList
+          : [];
+    } else if (type === 'private') {
+      // สร้าง array สมาชิกสำหรับ private chat (คุณและอีกฝ่าย)
+      members = [
+        { id: user?.id, username: user?.username },
+        { id: targetUserId ?? targetSocketId, username: targetName }
+      ];
+    }
+
     setActiveChat({
       type,
       targetId,
       targetName,
       targetUserId, // สำหรับ private chat
-      targetSocketId // สำหรับ private chat
+      targetSocketId, // สำหรับ private chat
+      members
     });
     // ปิด sidebar บนมือถือเมื่อเลือกแชท
     setIsSidebarOpen(false);
   };
+// ...existing code...
 
   // (R8) ฟังก์ชันสร้างกลุ่ม
   const handleCreateGroup = (groupName) => {
@@ -255,6 +280,7 @@ function App() {
             targetUserId={activeChat.targetUserId}
             targetSocketId={activeChat.targetSocketId}
             onOpenSidebar={() => setIsSidebarOpen(true)}
+            members={activeChat.members}
           />
         ) : (
           <div className="flex-1 flex flex-col bg-white dark:bg-gray-800">
