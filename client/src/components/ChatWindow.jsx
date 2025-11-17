@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import socket from '../socket';
 import Button from './Button';
 
-function ChatWindow({ user, chatType, targetId, targetName, targetUserId, targetSocketId, onOpenSidebar }) {
+function ChatWindow({ user, chatType, targetId, targetName, targetUserId, targetSocketId, onOpenSidebar, members }) {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
@@ -133,9 +133,7 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
   // (R6) รับข้อความใหม่จาก Server แบบ Real-time
   useEffect(() => {
     const handleReceiveMessage = (data) => {
-      // กรองข้อความให้ตรงกับห้องที่เปิดอยู่
       if (chatType === 'private') {
-        // Private: เช็คว่าเป็นข้อความจาก/ไปยัง targetUserId
         if (
           (data.type === 'private' && data.fromUserId === targetUserId) ||
           (data.type === 'private' && data.toUserId === targetUserId)
@@ -143,7 +141,7 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
 
           setMessages((prev) => [...prev, data]);
           
-          // Mark as read เมื่อรับข้อความใหม่ (ถ้าหน้าต่างแชทนี้เปิดอยู่)
+          // Mark as read 
           if (data.fromUserId === targetUserId) {
             socket.emit('mark_private_read', {
               userId: user.id,
@@ -152,7 +150,6 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
           }
         }
       } else if (chatType === 'group') {
-        // Group: เช็คว่าข้อความมาจากกลุ่มที่ถูกต้อง
         if (data.type === 'group' && data.groupName === targetId) {
           //check if own message
           const isOwn = data.fromUserId === user.id;
@@ -163,7 +160,7 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
           };
 
           setMessages((prev) => [...prev, message]);
-          // Mark as read เมื่อรับข้อความใหม่ (ถ้าหน้าต่างแชทนี้เปิดอยู่)
+          // Mark as read 
           if (data.groupName === targetId) {
             socket.emit('mark_group_read', {
               userId: user.id,
@@ -242,14 +239,12 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
     });
 
     if (chatType === 'private') {
-      // (R7) ส่งข้อความส่วนตัว
       socket.emit('send_private_message', {
         toSocketId: targetSocketId,
         toUserId: targetUserId,
         message: trimmedMessage
       });
     } else if (chatType === 'group') {
-      // (R11) ส่งข้อความในกลุ่ม
       socket.emit('send_group_message', {
         groupName: targetId,
         message: trimmedMessage
@@ -262,6 +257,26 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
   return (
     <div className="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900 h-full min-h-0 overflow-hidden">
       {/* Chat Header */}
+      <div className="px-4 py-2 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      {Array.isArray(members) && members.length > 0 ? (
+        <div className="flex items-center space-x-3 overflow-x-auto">
+          {members.map((m) => {
+            const key = m.id ?? m.userId ?? m.username ?? JSON.stringify(m);
+            const name = m.username ?? m.name ?? String(m);
+            return (
+              <div key={key} className="flex items-center space-x-2 mr-3 min-w-max">
+                <div className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xs font-medium text-gray-700 dark:text-gray-200">
+                  {name?.charAt(0)?.toUpperCase() ?? '?'}
+                </div>
+                <div className="text-xs text-gray-700 dark:text-gray-200 truncate">{name}</div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="text-xs text-gray-500">No members</div>
+      )}
+    </div>
       <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-2 md:px-6 py-2 md:py-4 flex items-center shadow-sm flex-shrink-0">
         {/* Mobile back button */}
         <button
