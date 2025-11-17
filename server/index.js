@@ -67,12 +67,10 @@ function getGroupList() {
   return groupList;
 }
 
-// Helper: นับจำนวนข้อความที่ยังไม่ได้อ่าน
 async function getUnreadCounts(userId) {
   try {
     const userObjectId = new mongoose.Types.ObjectId(userId);
 
-    // นับข้อความ Private ที่ยังไม่ได้อ่าน (กลุ่มตาม sender)
     const privateUnread = await Message.aggregate([
       {
         $match: {
@@ -370,6 +368,33 @@ io.on('connection', (socket) => {
 
     // แจ้ง Client ว่า Join สำเร็จ
     socket.emit('joined_group', { groupName });
+  });
+
+  // Get Group Members - ดึงรายชื่อสมาชิกในกลุ่ม
+  socket.on('get_group_members', (groupName) => {
+    const groupMembers = groups.get(groupName);
+
+    if (!groupMembers) {
+      socket.emit('group_members', { groupName, members: [] });
+      return;
+    }
+
+    const members = Array.from(groupMembers).map(socketId => {
+      const userData = users.get(socketId);
+      return {
+        socketId,
+        username: userData ? userData.username : 'Unknown',
+        userId: userData ? userData.userId : null
+      };
+    }).filter(member => member.userId); // กรองเฉพาะ members ที่มี userId
+
+    console.log(`[GET_GROUP_MEMBERS] ${groupName}: ${members.length} members`);
+
+    socket.emit('group_members', {
+      groupName,
+      members,
+      memberCount: members.length
+    });
   });
 
   // Typing indicator - practical approach with start/stop

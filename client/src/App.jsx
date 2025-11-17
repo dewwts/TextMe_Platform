@@ -67,10 +67,8 @@ function App() {
     socket.on('update_group_list', (groups) => {
       setGroupList(groups);
     });
-
-    // Notification Sound และ Browser Notification เมื่อได้รับข้อความใหม่
+    
     socket.on('receive_message', (data) => {
-      // เช็คว่าข้อความนี้มาหาเราหรือไม่ และเราไม่ได้เปิดหน้าต่างแชทนั้นอยู่
       const isForMe = (
         (data.type === 'private' && data.toUserId === user.id) ||
         (data.type === 'group' && data.fromUserId !== user.id)
@@ -82,12 +80,10 @@ function App() {
       );
 
       if (isForMe && !isCurrentChatOpen) {
-        // เล่นเสียง Notification
         const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZUQ0PVqzn77BdGAg+ltryxnMnBSuBzvLZiTYIGWe77OWfTRANUKbh8LdjHAU5kdj0zHksBSR3yPDekD8KFV6z6OyoVRQKRp/g8r9sIQUxh9Hz04IzBh5uwO/jmVENEFas5++wXRgIPpba88Z0JwYqgs/y2Yo3CBpnu+3moU4ND1Go4/C4ZBsEOI/Y88x5KwYldsvy2pI8CRResujuqFYUC0Wf4fK/bSEFMYfR89WDMgYeb8Lv4ppTDRBWr+rysFwYBzuW2vPIdSYGKoLA8tmKNggcZ73u56FQCxBRp+Pwt2QbBDmP2PPNeiwGI3fM8dySPQkUXbPn76pWFApFnuPzwW0hBTCH0fPWgjIFH27C7OWbVA0PVbDq8rBbGAc7ltrzyn0pBSqBzvPajDUIF2W+++mjTgsMUKXi8bllHAU7kNn0z3wqBSJ2yvPekj8HE12z6O2pVhMKQ53j88NsIgQvhdPz1YQxBR9txO/mnFQND1Sw6/KxWxcHOpbc88p9KQUqgdDz2ow1CBdlu/DqpE4LDFCl4fG5ZRwFO5DZ9M98KgUhdsrz3pI/CRNds+nwqVYTCkOd4/PDbCIFL4bT89WCMQYZY8Pv5p1TDQ9TsOvzslwWBzuV3fPLfykGKYHQ89yNNQgWZLvw66RNCw1RpOLxt2UcBDuP2fTPfSsGInXK8t+SQAkTXbPp8KlWEgpDnOTzw20iBi+G0/PWgjEGGWPD7+edUw0PU7Ds87JcFgY7ld3zzH8pBimB0PPcjTYIFmS68OulTQsNUqTi8rdlHAQ7j9n0z34rBiJ1y/Lfk0AJE1+z6fCqVhIJQpzk88NuIgYvhtPz1oQxBhlkw+/onlMOEFOw7POzXBYGO5Xe882AKgYogM7z3I02CRVjuO/rpU0KDFL+/v7');
         audio.volume = 0.3;
         audio.play().catch(e => console.log('Audio play failed:', e));
 
-        // แสดง Browser Notification (ถ้าได้รับอนุญาต)
         if ('Notification' in window && Notification.permission === 'granted') {
           const title = data.type === 'private' ? data.from : `${data.from} in ${data.groupName}`;
           new Notification(title, {

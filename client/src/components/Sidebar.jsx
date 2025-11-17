@@ -31,7 +31,7 @@ function Sidebar({
     };
   }, []);
 
-  // (R8) สร้างกลุ่มใหม่
+  // new group
   const handleCreateGroup = (e) => {
     e.preventDefault();
     const trimmedName = newGroupName.trim();
@@ -42,7 +42,7 @@ function Sidebar({
     }
   };
 
-  // (R10) Join กลุ่ม และเปิดหน้าต่างแชท
+  // Join group
   const handleGroupClick = (group) => {
     // เช็คว่าเรา Join กลุ่มนี้แล้วหรือยัง
     const isJoined = group.members.includes(user.username);
@@ -132,11 +132,9 @@ function Sidebar({
               <p className="text-sm text-gray-400 dark:text-gray-500 italic">No other users online</p>
             ) : (
               activeUsers.map((otherUser) => {
-                // หา Unread Count สำหรับ User นี้
                 const unread = unreadCounts.private.find(u => u.userId === otherUser.userId);
                 const unreadCount = unread ? unread.count : 0;
-
-                // Debug log
+                //un read
                 if (unreadCount > 0) {
                   console.log('[BADGE] User:', otherUser.username, 'Unread:', unreadCount);
                 }

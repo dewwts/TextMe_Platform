@@ -1,10 +1,7 @@
 import { io } from 'socket.io-client';
 
-// ดึง Server URL จาก Environment Variable
-// ถ้าไม่มี ให้ใช้ localhost สำหรับ Development
 const SERVER_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:3001';
 
-// สร้าง Socket Connection
 const socket = io(SERVER_URL, {
   autoConnect: true,
   reconnection: true,
@@ -14,11 +11,11 @@ const socket = io(SERVER_URL, {
 
 // Log Connection Events
 socket.on('connect', () => {
-  console.log('✅ Connected to server:', socket.id);
+  console.log('Connected to server:', socket.id);
 });
 
 socket.on('disconnect', () => {
-  console.log('❌ Disconnected from server');
+  console.log('Disconnected from server');
 });
 
 socket.on('connect_error', (error) => {
@@ -26,3 +23,4 @@ socket.on('connect_error', (error) => {
 });
 
 export default socket;
+

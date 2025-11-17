@@ -8,6 +8,8 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
   const [typingUsers, setTypingUsers] = useState(new Set());
+  const [showGroupMembers, setShowGroupMembers] = useState(false);
+  const [groupMembers, setGroupMembers] = useState([]);
   const typingTimeoutRef = useRef(null);
   const messagesEndRef = useRef(null);
 
@@ -19,6 +21,31 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
   useEffect(() => {
     scrollToBottom();
   }, [messages, isTyping, typingUsers]);
+
+  // ดึงรายชื่อสมาชิกในกลุ่ม
+  useEffect(() => {
+    if (chatType === 'group' && targetId) {
+      socket.emit('get_group_members', targetId);
+
+      const handleGroupMembers = (data) => {
+        if (data.groupName === targetId) {
+          setGroupMembers(data.members);
+        }
+      };
+
+      socket.on('group_members', handleGroupMembers);
+
+      // Update members when group list updates
+      socket.on('update_group_list', () => {
+        socket.emit('get_group_members', targetId);
+      });
+
+      return () => {
+        socket.off('group_members', handleGroupMembers);
+        socket.off('update_group_list');
+      };
+    }
+  }, [chatType, targetId]);
 
   // โหลดประวัติการแชทเมื่อเปิดหน้าต่างใหม่
   useEffect(() => {
@@ -234,7 +261,6 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
     });
 
     if (chatType === 'private') {
-      // (R7) ส่งข้อความส่วนตัว
       socket.emit('send_private_message', {
         toSocketId: targetSocketId,
         toUserId: targetUserId,
@@ -277,10 +303,79 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
         <div className="min-w-0 flex-1">
           <h3 className="font-semibold text-gray-900 dark:text-white text-sm md:text-lg truncate">{targetName}</h3>
           <p className="text-xs text-gray-500 dark:text-gray-400 leading-none">
-            {chatType === 'private' ? 'Private' : 'Group'}
+            {chatType === 'private' ? 'Private' : `Group • ${groupMembers.length} members`}
           </p>
         </div>
+
+        {/* Group Members Button */}
+        {chatType === 'group' && (
+          <button
+            onClick={() => setShowGroupMembers(true)}
+            className="ml-2 p-2 md:p-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
+            aria-label="View members"
+          >
+            <svg className="w-5 h-5 md:w-6 md:h-6 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          </button>
+        )}
       </div>
+
+      {/* Group Members Modal */}
+      {showGroupMembers && chatType === 'group' && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowGroupMembers(false)}>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full max-h-[80vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            {/* Modal Header */}
+            <div className="bg-[#e45b8f] dark:bg-[#d04a7e] text-white px-6 py-4 flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-bold">{targetName}</h3>
+                <p className="text-sm text-pink-100 mt-0.5">{groupMembers.length} members</p>
+              </div>
+              <button
+                onClick={() => setShowGroupMembers(false)}
+                className="p-2 rounded-lg hover:bg-[#d04a7e] dark:hover:bg-[#c93b6d] transition-colors"
+                aria-label="Close"
+              >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Members List */}
+            <div className="overflow-y-auto max-h-[calc(80vh-100px)]">
+              {groupMembers.length === 0 ? (
+                <div className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                  <svg className="w-16 h-16 mx-auto mb-3 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  <p className="font-medium">No members in this group</p>
+                </div>
+              ) : (
+                <div className="px-4 py-3">
+                  {groupMembers.map((member, index) => (
+                    <div
+                      key={member.socketId || index}
+                      className="flex items-center px-3 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl transition"
+                    >
+                      <div className="w-12 h-12 bg-[#e45b8f] dark:bg-[#e45b8f] rounded-full flex items-center justify-center text-white font-semibold text-lg mr-3 flex-shrink-0">
+                        {member.username.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-gray-900 dark:text-white truncate">
+                          {member.username}
+                          {member.userId === user.id && <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">(You)</span>}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Online</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Messages Container (R6) */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 md:p-6 space-y-2 md:space-y-4 overscroll-behavior-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
