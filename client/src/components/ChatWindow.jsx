@@ -97,6 +97,7 @@ function ChatWindow({ user, chatType, targetId, targetName, targetUserId, target
     } else {
       setIsLoadingHistory(false);
     }
+    // dasdsasd
   }, [chatType, targetId, targetUserId, user.id]);
 
   // Listen for typing indicators
